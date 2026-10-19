@@ -1,0 +1,269 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>AppLab: de una idea a una app</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: mesa de trabajo de prototipado — ruta de 5 pasos a la izquierda, teléfono vivo fijo a la derecha */
+:root{
+  --paper:#eef1f4; --surface:#ffffff; --ink:#18233a; --muted:#5a6578; --line:#d5dbe3;
+  --note:#ffd166; --note-ink:#3d2c00; --accent:#1f6f78; --accent-soft:#d9eef0;
+  --ok:#2e7d4f; --ok-soft:#e1f3e8; --bad:#b3412f; --bad-soft:#fbe6e2;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Figtree", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#11161f; --surface:#1a2130; --ink:#e7ecf3; --muted:#9aa5b8; --line:#2c3547;
+  --note:#e9b949; --note-ink:#2a1f00; --accent:#5cc3cc; --accent-soft:#18363b;
+  --ok:#6fcf97; --ok-soft:#173326; --bad:#f08a78; --bad-soft:#3a1d18; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#11161f; --surface:#1a2130; --ink:#e7ecf3; --muted:#9aa5b8; --line:#2c3547;
+  --note:#e9b949; --note-ink:#2a1f00; --accent:#5cc3cc; --accent-soft:#18363b;
+  --ok:#6fcf97; --ok-soft:#173326; --bad:#f08a78; --bad-soft:#3a1d18; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:16px/1.55 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+.wrap{max-width:1180px;margin:0 auto;display:grid;gap:28px}
+header{display:grid;gap:10px}
+.eyebrow{font:600 12px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font:800 clamp(30px,5vw,52px)/1.02 var(--f-display);margin:0;text-wrap:balance;letter-spacing:-.02em}
+h1 em{font-style:normal;background:var(--note);color:var(--note-ink);padding:0 .15em;border-radius:4px}
+.lead{max-width:66ch;color:var(--muted);margin:0}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button{font:600 14px/1 var(--f-body);cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:10px 14px}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.tag{font:500 12px/1 var(--f-mono);padding:6px 8px;border-radius:6px;background:var(--note);color:var(--note-ink)}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:28px;align-items:start}
+@media (max-width:900px){.main{grid-template-columns:minmax(0,1fr)}}
+nav.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-bottom:18px}
+nav.steps button{display:grid;gap:4px;text-align:left;padding:10px;border-radius:8px;min-width:0}
+nav.steps button span{font:600 11px/1 var(--f-mono);color:var(--muted)}
+nav.steps button b{font:700 14px/1.1 var(--f-display);overflow-wrap:anywhere}
+nav.steps button[aria-selected="true"]{border-color:var(--accent);background:var(--accent-soft)}
+nav.steps button.done span::after{content:" ✓";color:var(--ok)}
+@media (max-width:560px){nav.steps{grid-template-columns:repeat(5,minmax(0,1fr))}nav.steps button b{font-size:12px}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px;display:grid;gap:16px;min-width:0}
+.panel h2{font:700 24px/1.15 var(--f-display);margin:0;text-wrap:balance}
+.panel p{margin:0;max-width:68ch}
+.hint{font-size:14px;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.card{border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--paper);text-align:left;display:grid;gap:6px;font-weight:400;line-height:1.4}
+.card b{font:700 15px/1.2 var(--f-display)}
+.card small{color:var(--muted);font-size:13px}
+.card[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)}
+label{font-weight:600;font-size:14px;display:grid;gap:6px}
+input,textarea,select{font:15px/1.4 var(--f-body);color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px 12px;width:100%}
+textarea{resize:vertical;min-height:70px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.hmw{background:var(--note);color:var(--note-ink);border-radius:4px 4px 14px 4px;padding:18px;font:600 18px/1.35 var(--f-display);transform:rotate(-.6deg)}
+.feat{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;border-bottom:1px dashed var(--line);padding-block:8px}
+.feat span{overflow-wrap:anywhere}
+.prio{display:flex;gap:4px;flex-wrap:wrap}
+.prio button{padding:6px 8px;font-size:12px}
+.prio button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.x{padding:6px 9px;font-size:12px}
+.msg{border-radius:8px;padding:10px 12px;font-size:14px}
+.msg.ok{background:var(--ok-soft);color:var(--ok)}
+.msg.bad{background:var(--bad-soft);color:var(--bad)}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.sw{width:34px;height:34px;border-radius:50%;padding:0;border:3px solid var(--surface);box-shadow:0 0 0 1px var(--line)}
+.sw[aria-pressed="true"]{box-shadow:0 0 0 3px var(--ink)}
+.q{border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:8px}
+.q p{font-weight:600}
+.opts{display:grid;gap:6px}
+.opts button{text-align:left;font-weight:400;line-height:1.35}
+.opts button.right{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.opts button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.check{display:flex;gap:10px;align-items:flex-start;font-weight:400}
+.check input{width:auto;margin-top:4px}
+.score{font:700 15px/1 var(--f-mono)}
+pre.sheet{white-space:pre-wrap;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:14px;font:13px/1.5 var(--f-mono);margin:0;max-height:320px;overflow:auto}
+.nav-foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+/* Teléfono */
+aside{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);display:grid;gap:10px;justify-items:center}
+@media (max-width:900px){aside{position:static}}
+.phone{width:280px;max-width:100%;aspect-ratio:9/18.5;border-radius:36px;background:var(--ink);padding:12px;box-shadow:0 18px 40px -18px rgba(0,0,0,.45)}
+.screen{height:100%;border-radius:26px;background:#fbfcfe;color:#18233a;overflow:hidden;display:grid;grid-template-rows:auto auto 1fr auto}
+.sbar{display:flex;justify-content:space-between;font:600 10px/1 var(--f-mono);padding:10px 16px 4px;color:#5a6578}
+.appbar{padding:10px 16px 14px;color:#fff;display:grid;gap:2px}
+.appbar b{font:800 20px/1.1 var(--f-display);overflow-wrap:anywhere}
+.appbar small{font-size:11px;opacity:.9;overflow-wrap:anywhere}
+.body{padding:12px 14px;display:grid;gap:8px;align-content:start;overflow:hidden}
+.tile{border-radius:10px;padding:10px;background:#eef1f4;font-size:12px;display:flex;gap:8px;align-items:center;overflow-wrap:anywhere}
+.tile i{flex:none;width:18px;height:18px;border-radius:5px;display:block}
+.tabbar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid #d5dbe3;font:600 10px/1.2 var(--f-body);text-align:center;color:#5a6578}
+.tabbar div{padding:9px 4px 12px;overflow-wrap:anywhere}
+.tabbar div.on{font-weight:700}
+.empty{font-size:12px;color:#5a6578;text-align:center;padding:20px 6px}
+.caption{font:12px/1.4 var(--f-mono);color:var(--muted);text-align:center;max-width:280px}
+footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Introducción a la Ingeniería de Sistemas · Laboratorio de prototipado</div>
+    <h1>De una idea a una <em>app</em></h1>
+    <p class="lead">Recorre los cinco pasos del pensamiento de diseño para convertir un problema real del campus en el prototipo básico de una aplicación. A la derecha verás tu app tomar forma mientras avanzas. Al final, copia la ficha del equipo y publícala en el muro de Padlet del curso.</p>
+    <div class="bar">
+      <span class="tag" id="modeTag">Cargado con un ejemplo: UniAgenda</span>
+      <button id="blank" type="button">Empezar en blanco</button>
+      <button id="sample" type="button">Ver el ejemplo de nuevo</button>
+    </div>
+  </header>
+
+  <div class="main">
+    <section>
+      <nav class="steps" role="tablist" aria-label="Pasos del laboratorio"></nav>
+      <div id="panels"></div>
+    </section>
+
+    <aside aria-label="Vista previa del prototipo">
+      <div class="phone"><div class="screen" id="screen"></div></div>
+      <div class="caption" id="caption">Vista previa en vivo · pantalla 1 de 3</div>
+    </aside>
+  </div>
+
+  <footer>Material interactivo diseñado para la propuesta “De una idea a una app: mi primera solución digital”. Lo que escribes se guarda solo en este navegador.</footer>
+</div>
+
+<script>
+const STEPS=[
+  {k:"observar",n:"Paso 1",t:"Observar"},
+  {k:"definir",n:"Paso 2",t:"Definir"},
+  {k:"idear",n:"Paso 3",t:"Idear"},
+  {k:"prototipar",n:"Paso 4",t:"Prototipar"},
+  {k:"validar",n:"Paso 5",t:"Validar"}
+];
+const PROBLEMS=[
+  {id:"tareas",t:"Entregas que se olvidan",d:"Los estudiantes de primer ciclo pierden fechas de entrega porque los avisos llegan por canales distintos."},
+  {id:"horarios",t:"Cambios de aula y horario",d:"Las clases cambian de aula y nadie se entera a tiempo."},
+  {id:"asistencia",t:"Asistencia en papel",d:"Pasar lista toma 10 minutos de cada clase y los registros se pierden."},
+  {id:"habitos",t:"Estrés en semana de exámenes",d:"Los estudiantes duermen poco y no organizan pausas ni comidas."},
+  {id:"incidencias",t:"Fallas en el campus",d:"Proyectores, wifi o baños dañados se reportan tarde o nunca."}
+];
+const COLORS=["#1f6f78","#3a4fb5","#b3412f","#7a3fa0","#2e7d4f","#c77700"];
+const QUIZ=[
+  {p:"¿Por dónde empieza el diseño de una app según el pensamiento de diseño?",o:["Elegir el lenguaje de programación","Observar a las personas y su necesidad","Diseñar el logo"],a:1,
+   ok:"Correcto. Sin una necesidad real observada, la app resuelve un problema que nadie tiene.",
+   no:"Todavía no. La tecnología se elige después: primero se observa a las personas y su necesidad."},
+  {p:"Un “¿Cómo podríamos…?” bien escrito…",o:["Incluye la solución exacta","Nombra al usuario y su necesidad sin cerrar la solución","Describe la base de datos"],a:1,
+   ok:"Exacto. Deja espacio para varias ideas y mantiene el foco en el usuario.",
+   no:"Revisa el paso 2: la pregunta nombra al usuario y su necesidad, pero no dicta la solución."},
+  {p:"¿Cuántas funciones imprescindibles conviene tener en un primer prototipo?",o:["Todas las que se nos ocurran","Pocas, entre una y tres","Ninguna"],a:1,
+   ok:"Bien. Un producto mínimo viable prueba lo esencial antes de crecer.",
+   no:"Piensa en el producto mínimo viable: pocas funciones, bien elegidas, para probar rápido."},
+  {p:"Un prototipo de baja fidelidad sirve sobre todo para…",o:["Publicarlo en la tienda de apps","Obtener retroalimentación rápida y barata","Reemplazar el código final"],a:1,
+   ok:"Correcto. Permite equivocarse pronto y corregir sin costo.",
+   no:"No del todo. Su valor está en recibir comentarios temprano, antes de programar."},
+  {p:"Al validar la propuesta con otros equipos, lo más útil es…",o:["Defender la idea a toda costa","Escuchar, registrar comentarios y ajustar","Cambiar de problema"],a:1,
+   ok:"Así es. La retroalimentación entre pares mejora el prototipo.",
+   no:"La validación consiste en escuchar y ajustar, no en defender la primera versión."}
+];
+const CHECKS=["El problema viene de una situación real del campus o de la comunidad.","La pregunta “¿Cómo podríamos…?” nombra a un usuario concreto.","Hay entre una y tres funciones imprescindibles.","Las tres pantallas siguen el recorrido del usuario.","Recibimos al menos un comentario de otro equipo y lo registramos."];
+
+const SAMPLE={problem:"tareas",custom:"",user:"estudiantes de primer ciclo de Ingeniería de Sistemas",need:"recordar y organizar sus entregas en un solo lugar",insight:"revisan el celular muchas veces al día, pero los avisos del docente llegan por correo, WhatsApp y aula virtual",
+  feats:[{t:"Calendario de entregas por curso",p:"must"},{t:"Recordatorio 48 h antes de cada entrega",p:"must"},{t:"Marcar tareas como terminadas",p:"must"},{t:"Grupos de estudio",p:"nice"},{t:"Sincronizar con el aula virtual",p:"later"}],
+  name:"UniAgenda",slogan:"Tus entregas, bajo control",color:COLORS[0],screens:["Inicio","Calendario","Avisos"],quiz:{},checks:[true,true,true,true,false],step:0};
+const BLANK={problem:"",custom:"",user:"",need:"",insight:"",feats:[],name:"",slogan:"",color:COLORS[1],screens:["","",""],quiz:{},checks:CHECKS.map(()=>false),step:0};
+
+let S;
+try{S=JSON.parse(localStorage.getItem("applab"))}catch(e){}
+let isSample=false;
+if(!S){S=structuredClone(SAMPLE);isSample=true}
+function save(){try{localStorage.setItem("applab",JSON.stringify(S))}catch(e){}}
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function problemText(){const p=PROBLEMS.find(x=>x.id===S.problem);return S.custom.trim()||(p?p.t+": "+p.d:"")}
+function hmw(){if(!S.user&&!S.need)return "¿Cómo podríamos ayudar a [usuario] a [necesidad]?";
+  return `¿Cómo podríamos ayudar a ${S.user||"[usuario]"} a ${S.need||"[necesidad]"}${S.insight?", considerando que "+S.insight:""}?`}
+const musts=()=>S.feats.filter(f=>f.p==="must");
+function stepDone(i){return [!!problemText(),!!(S.user&&S.need),musts().length>=1&&musts().length<=3,!!(S.name&&S.screens.filter(Boolean).length===3),Object.keys(S.quiz).length===QUIZ.length][i]}
+
+function renderNav(){$("nav.steps").innerHTML=STEPS.map((s,i)=>`<button type="button" role="tab" id="tab-${s.k}" aria-selected="${i===S.step}" class="${stepDone(i)?"done":""}" data-i="${i}"><span>${s.n}</span><b>${s.t}</b></button>`).join("");
+  document.querySelectorAll("nav.steps button").forEach(b=>b.onclick=()=>{S.step=+b.dataset.i;save();render()})}
+
+function foot(){const i=S.step;return `<div class="nav-foot">${i>0?`<button type="button" data-go="${i-1}">← ${STEPS[i-1].t}</button>`:"<span></span>"}${i<4?`<button type="button" class="primary" data-go="${i+1}">Siguiente: ${STEPS[i+1].t} →</button>`:""}</div>`}
+
+function panel(){const i=S.step;
+  if(i===0)return `<div class="panel"><h2>Observa una necesidad real</h2><p>Toda app útil nace de algo que incomoda a alguien. Elige una situación del campus o escribe la que tu equipo observó.</p>
+  <div class="cards">${PROBLEMS.map(p=>`<button type="button" class="card" aria-pressed="${S.problem===p.id&&!S.custom}" data-p="${p.id}"><b>${p.t}</b><small>${p.d}</small></button>`).join("")}</div>
+  <label for="custom">O describe el problema que observó tu equipo<textarea id="custom" placeholder="Ejemplo: en la biblioteca no se sabe qué salas de estudio están libres.">${esc(S.custom)}</textarea></label>
+  <p class="hint">Pista: si el problema no le ocurre a una persona concreta, todavía es demasiado general.</p>${foot()}</div>`;
+  if(i===1)return `<div class="panel"><h2>Define el reto</h2><p>Convierte el problema en una pregunta que oriente el diseño. Nombra a quién ayudas y qué necesita, sin decidir aún la solución.</p>
+  <p class="hint">Problema elegido: ${esc(problemText()||"aún no eliges uno en el paso 1")}</p>
+  <div class="grid2"><label for="user">¿Quién es el usuario?<input id="user" value="${esc(S.user)}" placeholder="estudiantes que trabajan y estudian"></label>
+  <label for="need">¿Qué necesita lograr?<input id="need" value="${esc(S.need)}" placeholder="llegar a tiempo a sus clases"></label></div>
+  <label for="insight">¿Qué descubriste al observarlo? (opcional)<input id="insight" value="${esc(S.insight)}" placeholder="usan el transporte público y pierden señal"></label>
+  <div class="hmw" id="hmw">${esc(hmw())}</div>${foot()}</div>`;
+  if(i===2){const m=musts().length;return `<div class="panel"><h2>Idea y prioriza funciones</h2><p>Escribe todas las funciones que imagine el equipo y luego clasifícalas. El primer prototipo solo lleva las imprescindibles.</p>
+  <form id="ff" class="bar"><input id="newf" placeholder="Nueva función, por ejemplo: modo sin conexión" style="flex:1;min-width:0"><button class="primary" type="submit">Agregar</button></form>
+  <div>${S.feats.map((f,k)=>`<div class="feat"><span>${esc(f.t)}</span><div class="prio">${[["must","Imprescindible"],["nice","Deseable"],["later","Después"]].map(([v,l])=>`<button type="button" aria-pressed="${f.p===v}" data-f="${k}" data-v="${v}">${l}</button>`).join("")}</div><button type="button" class="x" data-del="${k}" aria-label="Quitar ${esc(f.t)}">Quitar</button></div>`).join("")||'<p class="hint">Aún no hay funciones. Agrega al menos tres ideas.</p>'}</div>
+  ${m===0?'<div class="msg bad">Marca al menos una función como imprescindible.</div>':m>3?`<div class="msg bad">Tienes ${m} imprescindibles. Un primer prototipo funciona mejor con tres o menos: ¿cuál puede esperar?</div>`:`<div class="msg ok">Bien: ${m} función${m>1?"es":""} imprescindible${m>1?"s":""}. Es un alcance realista para un producto mínimo viable.</div>`}${foot()}</div>`}
+  if(i===3)return `<div class="panel"><h2>Prototipa tu app</h2><p>Dale identidad y define el recorrido en tres pantallas. Toca cada pantalla en el teléfono para verla.</p>
+  <div class="grid2"><label for="name">Nombre de la app<input id="name" maxlength="24" value="${esc(S.name)}" placeholder="CampusYa"></label>
+  <label for="slogan">Frase corta<input id="slogan" maxlength="40" value="${esc(S.slogan)}" placeholder="Lo que pasa en tu campus, al instante"></label></div>
+  <div><label>Color principal</label><div class="swatches">${COLORS.map(c=>`<button type="button" class="sw" style="background:${c}" aria-pressed="${S.color===c}" data-c="${c}" aria-label="Color ${c}"></button>`).join("")}</div></div>
+  <div class="grid2">${[0,1,2].map(k=>`<label for="sc${k}">Pantalla ${k+1}<input id="sc${k}" maxlength="16" value="${esc(S.screens[k])}" placeholder="${["Inicio","Registrar","Perfil"][k]}"></label>`).join("")}</div>
+  <p class="hint">Las funciones imprescindibles del paso 3 aparecen en la pantalla de inicio.</p>${foot()}</div>`;
+  const sc=Object.entries(S.quiz).filter(([k,v])=>QUIZ[k].a===v).length;
+  return `<div class="panel"><h2>Valida y comparte</h2><p>Comprueba lo aprendido, revisa la lista de verificación y publica la ficha de tu equipo en el muro de Padlet para recibir comentarios.</p>
+  ${QUIZ.map((q,k)=>{const ans=S.quiz[k];return `<div class="q"><p>${k+1}. ${q.p}</p><div class="opts">${q.o.map((o,j)=>`<button type="button" data-q="${k}" data-o="${j}" class="${ans===undefined?"":j===q.a?"right":j===ans?"wrong":""}" ${ans!==undefined?"disabled":""}>${o}</button>`).join("")}</div>${ans===undefined?"":`<div class="msg ${ans===q.a?"ok":"bad"}">${ans===q.a?q.ok:q.no}</div>`}</div>`}).join("")}
+  <div class="bar"><span class="score">Puntaje: ${sc}/${QUIZ.length}</span><button type="button" id="rq">Reintentar cuestionario</button></div>
+  <div class="q"><p>Lista de verificación del equipo</p>${CHECKS.map((c,k)=>`<label class="check" for="ck${k}"><input type="checkbox" id="ck${k}" data-k="${k}" ${S.checks[k]?"checked":""}> ${c}</label>`).join("")}</div>
+  <div class="q"><p>Ficha del equipo para Padlet</p><pre class="sheet" id="sheet">${esc(sheet())}</pre><div class="bar"><button type="button" class="primary" id="copy">Copiar ficha</button><span class="hint" id="copied" aria-live="polite"></span></div></div>
+  ${foot()}</div>`}
+
+function sheet(){const by=p=>S.feats.filter(f=>f.p===p).map(f=>"  - "+f.t).join("\n")||"  - (sin definir)";
+  return `APP: ${S.name||"(sin nombre)"} — ${S.slogan||""}
+PROBLEMA: ${problemText()||"(sin definir)"}
+RETO: ${hmw()}
+FUNCIONES IMPRESCINDIBLES:
+${by("must")}
+DESEABLES:
+${by("nice")}
+PANTALLAS: ${S.screens.map((s,k)=>s||"Pantalla "+(k+1)).join(" → ")}
+AUTOEVALUACIÓN: ${S.checks.filter(Boolean).length}/${CHECKS.length} criterios cumplidos`}
+
+let shown=0;
+function renderPhone(){const sc=S.screens.map((s,k)=>s||["Inicio","Pantalla 2","Pantalla 3"][k]);
+  let body;
+  if(shown===0){const m=musts();body=m.length?m.map(f=>`<div class="tile"><i style="background:${S.color}"></i>${esc(f.t)}</div>`).join(""):'<div class="empty">Las funciones imprescindibles aparecerán aquí.</div>'}
+  else{const others=S.feats.filter(f=>f.p!=="must");body=`<div class="tile"><i style="background:${S.color};opacity:.5"></i>${esc(sc[shown])}: contenido de esta pantalla</div>`+(shown===1&&others.length?others.slice(0,3).map(f=>`<div class="tile"><i style="background:#d5dbe3"></i>${esc(f.t)} · ${f.p==="nice"?"deseable":"después"}</div>`).join(""):"")+(shown===2?`<div class="tile"><i style="background:#d5dbe3"></i>${esc(S.user||"Tu usuario")}</div>`:"")}
+  $("#screen").innerHTML=`<div class="sbar"><span>9:41</span><span>5G ▮▮▮</span></div>
+  <div class="appbar" style="background:${S.color}"><b>${esc(S.name||"Tu app")}</b><small>${esc(S.slogan||"Escribe una frase corta en el paso 4")}</small></div>
+  <div class="body">${body}</div>
+  <div class="tabbar">${sc.map((s,k)=>`<div role="button" tabindex="0" data-s="${k}" class="${k===shown?"on":""}" style="${k===shown?"color:"+S.color:""}">${esc(s)}</div>`).join("")}</div>`;
+  $("#caption").textContent=`Vista previa en vivo · pantalla ${shown+1} de 3`;
+  document.querySelectorAll(".tabbar [data-s]").forEach(d=>{const go=()=>{shown=+d.dataset.s;renderPhone()};d.onclick=go;d.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go()}}})}
+
+function bind(){const P=$("#panels");
+  P.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{S.step=+b.dataset.go;save();render();window.scrollTo({top:0,behavior:"smooth"})});
+  P.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{S.problem=b.dataset.p;S.custom="";upd()});
+  const live=(id,key,full)=>{const el=$("#"+id);if(el)el.oninput=()=>{S[key]=el.value;save();full?upd():soft()}};
+  live("custom","custom");live("user","user");live("need","need");live("insight","insight");live("name","name");live("slogan","slogan");
+  [0,1,2].forEach(k=>{const el=$("#sc"+k);if(el)el.oninput=()=>{S.screens[k]=el.value;save();soft()}});
+  const ff=$("#ff");if(ff)ff.onsubmit=e=>{e.preventDefault();const v=$("#newf").value.trim();if(v){S.feats.push({t:v,p:"nice"});upd();$("#newf").focus()}};
+  P.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{S.feats[+b.dataset.f].p=b.dataset.v;upd()});
+  P.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{S.feats.splice(+b.dataset.del,1);upd()});
+  P.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{S.color=b.dataset.c;upd()});
+  P.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>{S.quiz[b.dataset.q]=+b.dataset.o;upd()});
+  const rq=$("#rq");if(rq)rq.onclick=()=>{S.quiz={};upd()};
+  P.querySelectorAll("[data-k]").forEach(c=>c.onchange=()=>{S.checks[+c.dataset.k]=c.checked;save();$("#sheet").textContent=sheet()});
+  const cp=$("#copy");if(cp)cp.onclick=()=>{const t=sheet();const done=()=>$("#copied").textContent="Ficha copiada. Pégala en el muro de Padlet del curso.";
+    navigator.clipboard.writeText(t).then(done).catch(()=>{const r=document.createRange();r.selectNodeContents($("#sheet"));const s=getSelection();s.removeAllRanges();s.addRange(r);$("#copied").textContent="Texto seleccionado: usa Ctrl+C para copiarlo."})};}
+
+function soft(){const h=$("#hmw");if(h)h.textContent=hmw();renderNav();renderPhone()}
+function upd(){save();const a=document.activeElement?.id;render();if(a&&$("#"+a)&&a!=="newf"){const el=$("#"+a);el.focus();if(el.setSelectionRange&&el.value!==undefined)try{el.setSelectionRange(el.value.length,el.value.length)}catch(e){}}}
+function render(){renderNav();$("#panels").innerHTML=panel();bind();renderPhone();
+  $("#modeTag").hidden=!isSample}
+$("#blank").onclick=()=>{S=structuredClone(BLANK);isSample=false;shown=0;save();render()};
+$("#sample").onclick=()=>{S=structuredClone(SAMPLE);isSample=true;shown=0;save();render()};
+render();
+</script>
+
+</body></html>
